@@ -332,3 +332,6 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# A convenience project I use to test server features and other stuff, includes nothing of interest
+ServerTester/
