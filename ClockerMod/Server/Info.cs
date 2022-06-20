@@ -8,16 +8,18 @@ namespace Clocker.Mod
 {
 	public partial class Server
 	{
+		public InfoModule Info;
+		
 		public void InitInfo() {
-			Http.Add<Info>();
+			Http.Add<InfoModule>(out info);
 		}
 		
 		public void UnloadInfo() {
-			Info.Instance = null;
+			Info = null;
 		}
 		
 		[Scannable("/info/")]
-		public class Info {
+		public class InfoModule {
 			#region Mod map info
 			static Dictionary<int, ChapterInfo> AreaInfo = new Dictionary<int, ChapterInfo>();
 			
@@ -46,11 +48,6 @@ namespace Clocker.Mod
 				);
 			}
 			#endregion
-			
-			public static Info Instance;
-			public Info() {
-				Instance = this;
-			}
 			
 			#region Maps
 			[ScanRoute("maps.json")]

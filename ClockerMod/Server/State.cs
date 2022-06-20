@@ -8,37 +8,33 @@ namespace Clocker.Mod
 {
 	public partial class Server
 	{
+		public StateModule State;
+		
 		public void InitState() {
-			Http.Add<State>();
+			Http.Add<StateModule>(out State);
 			// The memory update should be subscribed to here with a call to UpdateStates but it is handled in the default mod
 		}
 		
 		public void UnloadState() {
-			State.Instance.StateHistory.Clear();
-			State.Instance.Staters.Clear();
-			State.Instance = null;
+			State.StateHistory.Clear();
+			State.Staters.Clear();
+			State = null;
 		}
 		
 		[Scannable("/state/")]
-		public class State {
-			public static State Instance;
-			
-			public State() {
-				Instance = this;
-			}
-			
+		public class StateModule {
+			public static StateModule Instance;
 			public Dictionary<string, Func<bool, object>> Staters = new Dictionary<string, Func<bool, object>>();
 			
-			// Acts as a container for states to ease serialization
 			internal Queue<Dictionary<string, object>> StateHistory = new Queue<Dictionary<string, object>>();
 			
 			public void AddStater(string name, Func<bool, object> stater) {
 				Staters.Add(name, stater);
 			}
 			
-			const int THIRTYMINUTES = 60 * 60 * 30;
+			const int HISTORYLIMIT = 60 * 60 * 30;
 			internal void UpdateStates() {
-				if (StateHistory.Count >= THIRTYMINUTES) StateHistory.Clear();
+				if (StateHistory.Count >= HISTORYLIMIT) StateHistory.Clear();
 				var states = GetStates(false);
 				StateHistory.Enqueue(states);
 			}

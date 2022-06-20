@@ -59,6 +59,7 @@ namespace Clocker.Server
 			try {
 				Add(subpath);
 			} catch (Exception) {
+				// If any exceptions occur, the method failed
 				return false;
 			}
 			return true;
@@ -135,7 +136,7 @@ namespace Clocker.Server
 		/// <exception cref="KeyNotFoundException">Thrown when the file labelled by the specified subpath hasn't been cached prior to the call.</exception>
 		public MemoryFile Get(string subpath) {
 			if (subpath == null) throw new ArgumentNullException("subpath", "File path cannot be null");
-			if (!Has(subpath)) throw new KeyNotFoundException("No data for the specified subpath is cached in memory.");
+			if (!Has(subpath)) throw new KeyNotFoundException("No data for the specified subpath is cached in memory");
 			return CachedFiles[subpath];
 		}
 		

@@ -6,7 +6,7 @@ namespace Clocker.Mod
 	{
 		public override void InitServer(Server server)
 		{
-			Server.State.Instance.AddStater("vanilla", State);
+			Server.Instance.State.AddStater("vanilla", State);
 		}
 		
 		public object State(bool prev) {
@@ -15,12 +15,12 @@ namespace Clocker.Mod
 		
 		public override void InitLate()
 		{
-			Server.State.Instance.UpdateStates();
+			Server.Instance.State.UpdateStates();
 		}
 		
 		public override void PostUpdate(Memory memory)
 		{
-			Server.State.Instance.UpdateStates();
+			Server.Instance.State.UpdateStates();
 		}
 	}
 }

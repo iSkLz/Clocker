@@ -19,20 +19,18 @@ namespace Clocker.Mod
 {
 	public partial class Server
 	{
+		public Graphics Graphics;
+		
 		public void InitGraphics() {
-			Graphics.Batch = new SpriteBatch(Engine.Instance.GraphicsDevice);
-			new Graphics();
+			Graphics = new GraphicsModule();
 		}
 		
 		public void UnloadGraphics() {
-			Graphics.Instance.ClearCache();
-			Graphics.Batch.Dispose();
-			Graphics.Instance = null;
+			Graphics.ClearCache();
+			Graphics = null;
 		}
 		
-		public class Graphics {
-			public static SpriteBatch Batch;
-			
+		internal class GraphicsModule {
 			public static void GraphicToPNG(Atlas atlas, string name, Stream output, int scale = 1) {
 				var sprite = atlas[name];
 				var textureIn = sprite.Texture.Texture_Safe;
@@ -68,9 +66,11 @@ namespace Clocker.Mod
 				textureOut.SaveAsPng(output, textureOut.Width, textureOut.Height);
 			}
 			
-			public static Graphics Instance;
-			public Graphics() {
-				Instance = this;
+			public Dictionary<Atlas, Dictionary<string, byte[]>> GraphicsCache = new Dictionary<Atlas, Dictionary<string, byte[]>>();
+			public Server Owner;
+			
+			public Graphics(Server owner) {
+				Owner = owner;
 				
 				Server.Instance.Http.Add("/gfx/game/").SetBackup(HandleGameGraphic).Add("cache", CacheGameGraphics);
 				GraphicsCache.Add(GFX.Game, new Dictionary<string, byte[]>());
@@ -91,38 +91,20 @@ namespace Clocker.Mod
 				}
 			}
 			
-			public Dictionary<Atlas, Dictionary<string, byte[]>> GraphicsCache = new Dictionary<Atlas, Dictionary<string, byte[]>>();
-			
 			public void HandleGameGraphic(HttpListenerContext ctx, string name) {
 				HandleGraphic(ctx, GFX.Game, name);
-			}
-			
-			public void CacheGameGraphics(HttpListenerContext ctx) {
-				CacheGraphics(GFX.Game, ctx);
 			}
 			
 			public void HandleUIGraphic(HttpListenerContext ctx, string name) {
 				HandleGraphic(ctx, GFX.Gui, name);
 			}
 			
-			public void CacheUIGraphics(HttpListenerContext ctx) {
-				CacheGraphics(GFX.Gui, ctx);
-			}
-			
 			public void HandlePortGraphic(HttpListenerContext ctx, string name) {
 				HandleGraphic(ctx, GFX.Portraits, name);
 			}
 			
-			public void CachePortGraphics(HttpListenerContext ctx) {
-				CacheGraphics(GFX.Portraits, ctx);
-			}
-			
 			public void HandleMiscGraphic(HttpListenerContext ctx, string name) {
 				HandleGraphic(ctx, GFX.Misc, name);
-			}
-			
-			public void CacheMiscGraphics(HttpListenerContext ctx) {
-				CacheGraphics(GFX.Misc, ctx);
 			}
 			
 			public void HandleGraphic(HttpListenerContext ctx, Atlas atlas, string name) {
@@ -150,6 +132,22 @@ namespace Clocker.Mod
 						ctx.Response.Close();
 					}
 				}
+			}
+			
+			public void CacheGameGraphics(HttpListenerContext ctx) {
+				CacheGraphics(GFX.Game, ctx);
+			}
+			
+			public void CacheUIGraphics(HttpListenerContext ctx) {
+				CacheGraphics(GFX.Gui, ctx);
+			}
+			
+			public void CachePortGraphics(HttpListenerContext ctx) {
+				CacheGraphics(GFX.Portraits, ctx);
+			}
+			
+			public void CacheMiscGraphics(HttpListenerContext ctx) {
+				CacheGraphics(GFX.Misc, ctx);
 			}
 			
 			public void CacheGraphics(Atlas atlas, HttpListenerContext ctx) {

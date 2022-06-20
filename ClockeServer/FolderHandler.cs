@@ -1,28 +1,26 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 
 namespace Clocker.Server
 {
 	public class FolderHandler
 	{
-		// TODO: Switch to new file cache once complete
-		public FileCacheO Cache;
+		// TODO: Add IO methods and document
+		public FileCache Cache;
 		
-		public FolderHandler(FileCacheO cache) {
+		public FolderHandler(FileCache cache) {
 			Cache = cache;
 		}
 		
 		public void HandleFile(HttpListenerContext ctx, string subpath) {
-			string mime;
-			byte[] file;
-			if (!Cache.TryGet(subpath, out mime, out file))
+			MemoryFile file;
+			if (!Cache.TryGet(subpath, out file))
 				ctx.Ratio("File doesn't exist");
-			ctx.ServeBytes(file, mime);
+			ctx.ServeFile(file);
 		}
 		
 		public void AttachTo(PathHandler handler) {
-			handler.BackupHandler = HandleFile;
+			handler.SetBackup(HandleFile);
 		}
 	}
 }

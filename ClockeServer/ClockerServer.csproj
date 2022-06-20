@@ -38,7 +38,9 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="FileCache\Cache.cs" />
-    <Compile Include="FileCache\Utils.cs" />
+    <Compile Include="FileCache\FileResolver.cs" />
+    <Compile Include="FileCache\MemoryFile.cs" />
+    <Compile Include="FileCache\Buffer.cs" />
     <Compile Include="FolderHandler.cs" />
     <Compile Include="Obsolete\FileCacheOld.cs" />
     <Content Include="Obsolete\ServerOld.cs" />
