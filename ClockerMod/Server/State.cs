@@ -23,7 +23,6 @@ namespace Clocker.Mod
 		
 		[Scannable("/state/")]
 		public class StateModule {
-			public static StateModule Instance;
 			public Dictionary<string, Func<bool, object>> Staters = new Dictionary<string, Func<bool, object>>();
 			
 			internal Queue<Dictionary<string, object>> StateHistory = new Queue<Dictionary<string, object>>();

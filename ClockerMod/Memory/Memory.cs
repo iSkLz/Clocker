@@ -5,11 +5,17 @@ using Monocle;
 
 namespace Clocker.Mod
 {
+	/// <summary>
+	/// Represents a state memory of different vanilla stats.
+	/// </summary>
 	public partial class Memory
 	{
+		/// <summary>
+		/// The singleton instance of the memory.
+		/// </summary>
 		public static Memory Instance;
 		
-		public static void Init()
+		internal static void Init()
 		{
 			Instance = new Memory();
 			Logger.Log("ClockerMemory", "Installing hooks...");
@@ -18,40 +24,81 @@ namespace Clocker.Mod
 			Logger.Log("ClockerMemory", "Initialized successfully.");
 		}
 		
+		/// <summary>
+		/// A copy of the current frame's data, safe to be used across threads.
+		/// </summary>
 		public Frame StableCurrent;
+		
+		/// <summary>
+		/// A copy of the previous frame's data, safe to be used across threads.
+		/// </summary>
 		public Frame StablePrevious;
 		
+		/// <summary>
+		/// The current frame's data.
+		/// </summary>
 		public Frame Current;
+		
+		/// <summary>
+		/// The previous frame's data.
+		/// </summary>
 		public Frame Previous;
 		
+		/// <summary>
+		/// Holds a reference to the berry that has been collected in the current frame (if it exists).
+		/// </summary>
 		public Strawberry FBerry = null;
+		
+		/// <summary>
+		/// Holds a reference to the berry that has been picked up in the current frame (if it exists).
+		/// </summary>
 		public Strawberry FTBerry = null;
+		
+		/// <summary>
+		/// Holds a reference to the crystal heart that has been collected in the current frame (if it exists).
+		/// </summary>
 		public HeartGem FHeart = null;
+		
+		/// <summary>
+		/// Holds a reference to the cassette tape has been collected in the current frame (if it exists).
+		/// </summary>
 		public Cassette FTape = null;
+		
+		/// <summary>
+		/// Holds a reference to the summit flag that has been activated in the current frame (if it exists).
+		/// </summary>
 		public int? FFlag = null;
 		
-		public Memory() {
+		internal Memory() {
 			Previous = new Frame();
 			Current = new Frame();
 			
+			// We need to compare flags to know when the flag changes so we create an impossible flag initially
 			Current.Flag = new Flag() { Number = -100 };
 			
 			StableCurrent = Current;
 			StablePrevious = Previous;
 		}
 		
+		// This is public in case a mod needs to do some shenanigans.
+		/// <summary>
+		/// Updates the memory's state.
+		/// </summary>
 		public void Update() {
 			Mods.Instance.Do((mod) => mod.PreUpdate(this));
 			
 			Previous = Current;
 			
 			var frm = new Frame();
+			// We're in a level, track in-game data
 			if (Engine.Scene is Level) {
 				var lvl = (Level)Engine.Scene;
 				var player = lvl.Tracker.GetEntity<Player>();
 				
 				frm.Area = Area.GetCurrent();
 				frm.Room = Room.GetCurrent();
+				
+				// The room has to have a checkpoint entity or it can be the very first in the level
 				if (frm.Room.Value.Checkpoint || (!Previous.Checkpoint.HasValue && lvl.Session.FirstLevel))
 					frm.Checkpoint = Cpoint.Get(frm.Room.Value);
 				else
@@ -85,6 +132,7 @@ namespace Clocker.Mod
 					frm.LastTouchMoon = Previous.LastTouchMoon;
 				}
 				
+				// Copy from last frame and whichever heart has been picked up will be overridden correctly
 				frm.LastAHeart = Previous.LastAHeart;
 				frm.LastBHeart = Previous.LastBHeart;
 				frm.LastCHeart = Previous.LastCHeart;
@@ -97,7 +145,6 @@ namespace Clocker.Mod
 					if (frm.Area.Value.Mode == AreaMode.CSide)
 						frm.LastCHeart = frm.Room;
 					FHeart = null;
-				} else {
 				}
 				
 				if (FTape != null) {
@@ -114,10 +161,12 @@ namespace Clocker.Mod
 				frm.Paused = lvl.Paused;
 				frm.ILPaused = (player == null) ? false : player.TimePaused;
 				
+				// We're in-game, track last variables
 				frm.LastArea = frm.Area;
 				frm.LastCheckpoint = frm.Checkpoint;
 				frm.LastRoom = frm.Room;
 			} else {
+				// We're not in-game, keep last variables
 				frm.LastArea = Previous.LastArea;
 				frm.LastCheckpoint = Previous.LastCheckpoint;
 				frm.LastRoom = Previous.LastRoom;
@@ -140,123 +189,12 @@ namespace Clocker.Mod
 			
 			Current = frm;
 			
+			// Stable frames are only updated after all the data crunching is done
+			// This way we don't get mid update access issues
 			StableCurrent = Current;
 			StablePrevious = Previous;
 			
 			Mods.Instance.Do((mod) => mod.PostUpdate(this));
 		}
-		
-		#region I didn't realize these were useless
-		public bool LevelChanged() {
-			return StableCurrent.Area.HasValue &&
-				(StablePrevious.Area.HasValue
-					? (StablePrevious.Area.Value.SID != StableCurrent.Area.Value.SID)
-					: true
-				);
-		}
-		
-		public bool LevelEntered(string SID) {
-			return StableCurrent.Area.HasValue && StableCurrent.Area.Value.SID == SID &&
-				(StablePrevious.Area.HasValue
-					? (StablePrevious.Area.Value.SID != SID)
-					: true
-				);
-		}
-		
-		public bool LevelExitted(string SID) {
-			return StablePrevious.Area.HasValue && StablePrevious.Area.Value.SID == SID
-				&& StableCurrent.Area.Value.SID != SID;
-		}
-		
-		public bool CheckpointChanged() {
-			return StableCurrent.Checkpoint.HasValue &&
-				(StablePrevious.Checkpoint.HasValue
-					? (StablePrevious.Checkpoint.Value.SameAs(StableCurrent.Checkpoint.Value))
-					: true
-				);
-		}
-		
-		public bool CheckpointEntered(Cpoint cpoint) {
-			return StableCurrent.Checkpoint.HasValue && StableCurrent.Checkpoint.Value.SameAs(cpoint) &&
-				(StablePrevious.Checkpoint.HasValue
-					? !StablePrevious.Checkpoint.Value.SameAs(cpoint)
-					: true
-				);
-		}
-		
-		public bool CheckpointExitted(Cpoint cpoint) {
-			return StablePrevious.Checkpoint.HasValue && StablePrevious.Checkpoint.Value.SameAs(cpoint)
-				&& !StableCurrent.Checkpoint.Value.SameAs(cpoint);
-		}
-		
-		public bool RoomChanged() {
-			return StableCurrent.Room.HasValue &&
-				(StablePrevious.Room.HasValue
-					? (StablePrevious.Room.Value.SameAs(StableCurrent.Room.Value))
-					: true
-				);
-		}
-		
-		public bool RoomEntered(Room room) {
-			return StableCurrent.Room.HasValue && StableCurrent.Room.Value.SameAs(room) &&
-				(StablePrevious.Room.HasValue
-					? !StablePrevious.Room.Value.SameAs(room)
-					: true
-				);
-		}
-		
-		public bool RoomExitted(Room room) {
-			return StablePrevious.Room.HasValue && StablePrevious.Room.Value.SameAs(room)
-				&& !StableCurrent.Room.Value.SameAs(room);
-		}
-		
-		public bool BerryCollected(Berry berry) {
-			return StableCurrent.LastBerry.HasValue && StableCurrent.LastBerry.Value.SameAs(berry)
-				&& (StablePrevious.LastBerry.HasValue
-				    ? !StablePrevious.LastBerry.Value.SameAs(berry)
-					: true
-				);
-		}
-		
-		public bool BerryTouched(Berry berry) {
-			return StableCurrent.LastTouchBerry.HasValue && StableCurrent.LastTouchBerry.Value.SameAs(berry)
-				&& (StablePrevious.LastTouchBerry.HasValue
-				    ? !StablePrevious.LastTouchBerry.Value.SameAs(berry)
-					: true
-				);
-		}
-		
-		public bool GoldenCollected(Area area) {
-			return StableCurrent.LastGolden.HasValue && StableCurrent.LastGolden.Value.SID == area.SID
-				&& (StablePrevious.LastGolden.HasValue
-				    ? StablePrevious.LastGolden.Value.SID != area.SID
-					: true
-				);
-		}
-		
-		public bool GoldenTouched(Area area) {
-			return StableCurrent.LastTouchGolden.HasValue && StableCurrent.LastTouchGolden.Value.SID == area.SID
-				&& (StablePrevious.LastTouchGolden.HasValue
-				    ? StablePrevious.LastTouchGolden.Value.SID != area.SID
-					: true
-				);
-		}
-		
-		public bool MoonCollected(Area area) {
-			return StableCurrent.LastMoon.HasValue && StableCurrent.LastMoon.Value.SID == area.SID
-				&& (StablePrevious.LastMoon.HasValue
-				    ? StablePrevious.LastMoon.Value.SID != area.SID
-					: true
-				);
-		}
-		
-		public bool MoonTouched(Area area) {
-			return StableCurrent.LastTouchMoon.HasValue && StableCurrent.LastTouchMoon.Value.SID == area.SID
-				&& (StablePrevious.LastTouchMoon.HasValue
-				    ? StablePrevious.LastTouchMoon.Value.SID != area.SID
-					: true
-				);
-		}
-		#endregion
 	}
 }

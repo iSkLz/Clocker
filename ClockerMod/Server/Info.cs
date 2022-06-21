@@ -11,7 +11,7 @@ namespace Clocker.Mod
 		public InfoModule Info;
 		
 		public void InitInfo() {
-			Http.Add<InfoModule>(out info);
+			Http.Add<InfoModule>(out Info);
 		}
 		
 		public void UnloadInfo() {

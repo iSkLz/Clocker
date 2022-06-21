@@ -19,10 +19,10 @@ namespace Clocker.Mod
 {
 	public partial class Server
 	{
-		public Graphics Graphics;
+		public GraphicsModule Graphics;
 		
 		public void InitGraphics() {
-			Graphics = new GraphicsModule();
+			Graphics = new GraphicsModule(this);
 		}
 		
 		public void UnloadGraphics() {
@@ -30,7 +30,7 @@ namespace Clocker.Mod
 			Graphics = null;
 		}
 		
-		internal class GraphicsModule {
+		public class GraphicsModule {
 			public static void GraphicToPNG(Atlas atlas, string name, Stream output, int scale = 1) {
 				var sprite = atlas[name];
 				var textureIn = sprite.Texture.Texture_Safe;
@@ -69,19 +69,19 @@ namespace Clocker.Mod
 			public Dictionary<Atlas, Dictionary<string, byte[]>> GraphicsCache = new Dictionary<Atlas, Dictionary<string, byte[]>>();
 			public Server Owner;
 			
-			public Graphics(Server owner) {
+			internal GraphicsModule(Server owner) {
 				Owner = owner;
 				
-				Server.Instance.Http.Add("/gfx/game/").SetBackup(HandleGameGraphic).Add("cache", CacheGameGraphics);
+				owner.Http.Add("/gfx/game/").SetBackup(HandleGameGraphic).Add("cache", CacheGameGraphics);
 				GraphicsCache.Add(GFX.Game, new Dictionary<string, byte[]>());
 				
-				Server.Instance.Http.Add("/gfx/ui/").SetBackup(HandleUIGraphic).Add("cache", CacheUIGraphics);
+				owner.Http.Add("/gfx/ui/").SetBackup(HandleUIGraphic).Add("cache", CacheUIGraphics);
 				GraphicsCache.Add(GFX.Gui, new Dictionary<string, byte[]>());
 				
-				Server.Instance.Http.Add("/gfx/port/").SetBackup(HandlePortGraphic).Add("cache", CachePortGraphics);
+				owner.Http.Add("/gfx/port/").SetBackup(HandlePortGraphic).Add("cache", CachePortGraphics);
 				GraphicsCache.Add(GFX.Portraits, new Dictionary<string, byte[]>());
 				
-				Server.Instance.Http.Add("/gfx/misc/").SetBackup(HandleMiscGraphic).Add("cache", CacheMiscGraphics);
+				owner.Http.Add("/gfx/misc/").SetBackup(HandleMiscGraphic).Add("cache", CacheMiscGraphics);
 				GraphicsCache.Add(GFX.Misc, new Dictionary<string, byte[]>());
 			}
 			
