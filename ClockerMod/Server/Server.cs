@@ -33,6 +33,9 @@ namespace Clocker.Mod
 			Instance.Http.Listener.Stop();
 			Instance.Http.Listener.Close();
 			
+			// TODO: Make sure the request queue has been cleared before unloading modules
+			// Any left request maaaaaaay be able to cause some null trouble here
+			
 			Instance.UnloadState();
 			Instance.UnloadStatic();
 			Instance.UnloadGraphics();

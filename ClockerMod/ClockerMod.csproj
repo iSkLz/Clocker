@@ -34,6 +34,10 @@
       <HintPath>..\..\..\..\..\Apps\ModMaker\Modded\Celeste.exe</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="DotNetZip">
+      <HintPath>..\..\..\..\..\Apps\ModMaker\Speedrun\DotNetZip.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="FNA">
       <HintPath>..\..\..\..\..\Apps\ModMaker\Modded\FNA.dll</HintPath>
       <Private>False</Private>
@@ -88,9 +92,10 @@
     <Compile Include="Server\Web.cs" />
     <Compile Include="Server\Xml.cs" />
     <Compile Include="Utils\EventResolver.cs" />
+    <Compile Include="Utils\FileResolvers.cs" />
     <Compile Include="Utils\InfoStructs.cs" />
     <Compile Include="Utils\TextureHelper.cs" />
-    <Compile Include="Utils\WebContent.cs" />
+    <Compile Include="Utils\Content.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClockeServer\ClockerServer.csproj">

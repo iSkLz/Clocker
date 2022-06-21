@@ -171,6 +171,32 @@ namespace Clocker.Server
 			Add(subpath, file);
 			return file;
 		}
+		
+		/// <summary>
+		/// Attempts to retrieve the file labelled by the specified from the cache, and adds it if it's not cached.
+		/// </summary>
+		/// <param name="subpath">Path of the file to retrieve or add.</param>
+		/// <param name="output">The cached file or the newly added file.</param>
+		/// <returns>True if the file was returned; otherwise false.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when a null file path is provided.</exception>
+		public bool TryGetOrAdd(string subpath, out MemoryFile output) {
+			if (subpath == null) throw new ArgumentNullException("subpath", "File path cannot be null");
+			MemoryFile file;
+			
+			if (TryGet(subpath, out file)) {
+				output = file;
+				return true;
+			}
+			
+			if (Resolver.TryResolve(subpath, out file)) {
+				Add(subpath, file);
+				output = file;
+				return true;
+			}
+			
+			output = default(MemoryFile);
+			return false;
+		}
 		#endregion
 		
 		#region Refresh methods

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Clocker.Server
 {
@@ -20,6 +21,8 @@ namespace Clocker.Server
 		/// <param name="file">The variable to output the resolved file to.</param>
 		/// <returns>Whether the file was resolved successfully or not.</returns>
 		bool TryResolve(string subpath, out MemoryFile file);
+		
+		IFileResolver SubResolver(string subdir);
 	}
 	
 	/// <summary>
@@ -61,6 +64,10 @@ namespace Clocker.Server
 			}
 			file = default(MemoryFile);
 			return false;
+		}
+		
+		public IFileResolver SubResolver(string subpath) {
+			throw new NotImplementedException();
 		}
 	}
 }

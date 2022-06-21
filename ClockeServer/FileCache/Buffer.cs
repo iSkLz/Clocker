@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Clocker.Server
@@ -123,6 +124,16 @@ namespace Clocker.Server
 			for (int i = 0; i < length; i++) {
 				target[i + startDest] = bfr[i + startFrom];
 			}
+		}
+		
+		/// <summary>
+		/// Converts the bytes of the buffer to a UTF-8 string.
+		/// </summary>
+		/// <returns>The resultant string.</returns>
+		public string ToText() {
+			var build = new StringBuilder();
+			build.Append(Encoding.UTF8.GetChars(bfr));
+			return build.ToString();
 		}
 	}
 }

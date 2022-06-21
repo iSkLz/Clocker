@@ -205,6 +205,15 @@ namespace Clocker.Server
 		}
 		
 		/// <summary>
+		/// Returns the path in web style (lower case/forward slashes).
+		/// </summary>
+		/// <param name="file">The path to webbify.</param>
+		/// <returns>The resultant path.</returns>
+		public static string WebName(this string path) {
+			return path.Replace('\\', '/').ToLowerInvariant();
+		}
+		
+		/// <summary>
 		/// Returns the file's extension in web style (lower case/not prefixed).
 		/// </summary>
 		/// <param name="file">The file whose extension to get.</param>
@@ -224,6 +233,33 @@ namespace Clocker.Server
 		#endregion
 		
 		#region Other utils
+		/// <summary>
+		/// Returns the path's extension in web style (lower case/not prefixed).
+		/// </summary>
+		/// <param name="file">The path whose extension to get.</param>
+		/// <returns>The resultant extension.</returns>
+		public static string WebExt(this string path) {
+			return new FileInfo(path).WebExt();
+		}
+		
+		/// <summary>
+		/// Returns the path's file name in web style (lower case).
+		/// </summary>
+		/// <param name="file">The path whose file name to get.</param>
+		/// <returns>The resultant file name.</returns>
+		public static string WebFile(this string path) {
+			return new FileInfo(path).Name;
+		}
+		
+		/// <summary>
+		/// Returns the path's directory in web style (lower case).
+		/// </summary>
+		/// <param name="file">The file path whose directory to get.</param>
+		/// <returns>The resultant directory.</returns>
+		public static string WebDir(this string path) {
+			return path.Substring(0, path.Length - path.WebFile().Length);
+		}
+		
 		/// <summary>
 		/// Joins a set of strings with a given delimeter.
 		/// </summary>

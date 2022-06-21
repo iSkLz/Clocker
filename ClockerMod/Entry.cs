@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 
 // TODO: Implement a way to provide map info without coding a clocker mod
 // Probably some ModAsset shenanigans
+// Edit: There's a convenient place to put that now at Content.cs
 
 // TODO: Implement vanilla map info
 
