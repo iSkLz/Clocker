@@ -63,10 +63,13 @@ namespace Clocker.Mod
 		public static Cpoint Get(Room room) {
 			var cps = Area.GetCurrent().GetData().ModeData.Checkpoints;
 			
-			int i;
-			for (i = 0; i < cps.Length; i++) {
-				if (cps[i].Level == room.Name) break;
+			int i = 0;
+			if (cps != null) {
+				for (i = 0; i < cps.Length; i++) {
+					if (cps[i].Level == room.Name) break;
+				}
 			}
+			
 			var cpoint = new Cpoint();
 			cpoint.Area = Area.GetCurrent();
 			cpoint.Order = 0;
