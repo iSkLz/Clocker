@@ -10,7 +10,7 @@ namespace Clocker.Server
 		/// <summary>
 		/// The contents of the file.
 		/// </summary>
-		public Buffer Content;
+		public MemoryBuffer Content;
 		
 		/// <summary>
 		/// The MIME type of the file.
@@ -23,7 +23,7 @@ namespace Clocker.Server
 		/// <param name="buffer">The buffer containing the contents of the file.</param>
 		/// <param name="nameOrMime">The MIME type of the file or its name to guess from.</param>
 		/// <exception cref="ArgumentNullException">Thrown when a null buffer was provided.</exception>
-		public MemoryFile(Buffer buffer, string nameOrMime) {
+		public MemoryFile(MemoryBuffer buffer, string nameOrMime) {
 			if (buffer == null)
 				throw new ArgumentNullException("buffer", "File buffer cannot be null");
 			Content = buffer;

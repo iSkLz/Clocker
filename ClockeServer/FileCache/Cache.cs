@@ -86,7 +86,7 @@ namespace Clocker.Server
 		/// <param name="buffer">Contents of the file to add.</param>
 		/// <exception cref="ArgumentNullException">Thrown when a null file path is provided.</exception>
 		/// <exception cref="ArgumentNullException">Thrown when a null buffer is provided.</exception>
-		public void Add(string subpath, Buffer buffer) {
+		public void Add(string subpath, MemoryBuffer buffer) {
 			if (subpath == null) throw new ArgumentNullException("subpath", "File path cannot be null");
 			if (buffer == null) throw new ArgumentNullException("buffer", "File buffer cannot be null");
 			CachedFiles.Add(subpath, new MemoryFile(buffer, subpath));
@@ -210,7 +210,7 @@ namespace Clocker.Server
 		/// <exception cref="ArgumentNullException">Thrown when a null file path is provided.</exception>
 		/// <exception cref="ArgumentNullException">Thrown when a null buffer is provided.</exception>
 		/// <exception cref="InvalidOperationException">Thrown when the file wasn't cached prior to the call.</exception>
-		public void Refresh(string subpath, Buffer buffer) {
+		public void Refresh(string subpath, MemoryBuffer buffer) {
 			if (subpath == null) throw new ArgumentNullException("subpath", "File path cannot be null");
 			if (buffer == null) throw new ArgumentNullException("buffer", "File buffer cannot be null");
 			if (!Has(subpath)) throw new InvalidOperationException("The file hasn't been cached yet");

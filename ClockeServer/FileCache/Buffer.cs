@@ -10,7 +10,7 @@ namespace Clocker.Server
 	/// <remarks>
 	/// This class is a wrapper of byte[].
 	/// </remarks>
-	public class Buffer {
+	public class MemoryBuffer {
 		byte[] bfr;
 		
 		/// <summary>
@@ -44,7 +44,7 @@ namespace Clocker.Server
 		/// Constructs a new instance from an array of bytes.
 		/// </summary>
 		/// <param name="bfr">The array of bytes to use.</param>
-		public Buffer(byte[] arr) {
+		public MemoryBuffer(byte[] arr) {
 			bfr = arr;
 		}
 		
@@ -55,7 +55,7 @@ namespace Clocker.Server
 		/// <param name="length">The number of bytes to read. Use a negative value to read the entire stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when a null stream was provided.</exception>
 		/// <exception cref="ArgumentException">Thrown when a stream that doesn't support reading was passed.</exception>
-		public Buffer(Stream stream, int length = -1) {
+		public MemoryBuffer(Stream stream, int length = -1) {
 			if (stream == null)
 				throw new ArgumentNullException("stream", "Input stream cannot be null");
 			if (!stream.CanRead)

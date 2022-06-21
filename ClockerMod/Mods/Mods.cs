@@ -31,6 +31,7 @@ namespace Clocker.Mod
 		internal Mods()
 		{
 			List = new List<ClockerMod>();
+			IndexedList = new Dictionary<Type, ClockerMod>();
 		}
 		
 		/// <summary>
@@ -49,6 +50,7 @@ namespace Clocker.Mod
 		/// <param name="mod">An instance of the mod.</param>
 		public void Add<T>(T mod) where T : ClockerMod {
 			List.Add(mod);
+			IndexedList.Add(mod.GetType(), mod);
 		}
 		
 		/// <summary>
